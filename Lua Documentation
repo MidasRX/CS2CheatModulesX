@@ -1,0 +1,732 @@
+# 🎮 Lua Scripting System - Complete Guide
+
+## 📋 Table of Contents
+1. [Introduction](#introduction)
+2. [Getting Started](#getting-started)
+3. [Script Structure](#script-structure)
+4. [API Reference](#api-reference)
+5. [Callbacks](#callbacks)
+6. [Examples](#examples)
+7. [Best Practices](#best-practices)
+
+---
+
+## 🌟 Introduction
+
+
+### Features
+- ✅ Full drawing API (lines, rects, circles, text)
+- ✅ Player information access
+- ✅ Config manipulation
+- ✅ Event callbacks (OnPaint, OnCreateMove, etc.)
+- ✅ World-to-screen conversion
+- ✅ Math utilities
+- ✅ Hot-reload support
+
+---
+
+## 🚀 Getting Started
+
+### Step 1: Create Your Script
+1. Navigate to the `lua_scripts` folder (created automatically next to your DLL)
+2. Create a new `.lua` file (e.g., `my_script.lua`)
+3. Write your script using the API below
+
+### Step 2: Load the Script
+1. Open the cheat menu
+2. Go to **Other** → **Lua Scripts**
+3. Click **Refresh Scripts** to scan the folder
+4. Enable your script with the checkbox
+
+### Step 3: Test Your Script
+- Scripts are loaded and executed automatically
+- Check console for any Print() outputs
+- Use the **Reload** button to test changes without restarting
+
+---
+
+## 📝 Script Structure
+
+### Basic Template
+
+```lua
+-- Script Name: My Custom Script
+-- Description: What this script does
+
+-- Global variables (persist between calls)
+local myVariable = 0
+
+-- Callback function
+function OnPaint()
+    -- Your code here
+    DrawText(10, 10, 255, 255, 255, 255, "Hello from Lua!")
+end
+
+-- Register the callback
+RegisterCallback("OnPaint", OnPaint)
+
+-- Initialization
+Print("My Custom Script loaded!")
+```
+
+### Important Notes
+- Scripts run in their own environment
+- Global variables persist between callback calls
+- Use `local` for variables that don't need to persist
+- Always check for nil values before using objects
+
+---
+
+## 🔧 API Reference
+
+### 📺 Console Functions
+
+#### `Print(text)`
+Print a message to the game console.
+
+```lua
+Print("Hello, world!")
+```
+
+#### `PrintColor(r, g, b, text)`
+Print a colored message to the game console.
+
+```lua
+PrintColor(255, 0, 0, "Red text!")
+PrintColor(0, 255, 0, "Green text!")
+```
+
+---
+
+### ⚙️ Configuration Functions
+
+#### `GetBool(path)` → `boolean`
+Get a boolean config value.
+
+```lua
+local value = GetBool("some.config.path")
+```
+
+#### `SetBool(path, value)`
+Set a boolean config value.
+
+```lua
+SetBool("some.config.path", true)
+```
+
+#### `GetInt(path)` → `number`
+Get an integer config value.
+
+```lua
+local value = GetInt("some.config.path")
+```
+
+#### `SetInt(path, value)`
+Set an integer config value.
+
+```lua
+SetInt("some.config.path", 100)
+```
+
+#### `GetFloat(path)` → `number`
+Get a float config value.
+
+```lua
+local value = GetFloat("some.config.path")
+```
+
+#### `SetFloat(path, value)`
+Set a float config value.
+
+```lua
+SetFloat("some.config.path", 1.5)
+```
+
+---
+
+### 👤 Player Functions
+
+#### `GetLocalPlayer()` → `player`
+Get the local player object.
+
+```lua
+local player = GetLocalPlayer()
+if not player then
+    return
+end
+```
+
+#### `IsLocalPlayerAlive()` → `boolean`
+Check if local player is alive.
+
+```lua
+if IsLocalPlayerAlive() then
+    -- Do something
+end
+```
+
+#### `GetHealth(player)` → `number`
+Get player's health.
+
+```lua
+local hp = GetHealth(player)
+```
+
+#### `GetArmor(player)` → `number`
+Get player's armor value.
+
+```lua
+local armor = GetArmor(player)
+```
+
+#### `GetTeam(player)` → `number`
+Get player's team (2 = T, 3 = CT).
+
+```lua
+local team = GetTeam(player)
+if team == 2 then
+    -- Terrorist
+elseif team == 3 then
+    -- Counter-Terrorist
+end
+```
+
+#### `IsAlive(player)` → `boolean`
+Check if player is alive.
+
+```lua
+if IsAlive(player) then
+    -- Player is alive
+end
+```
+
+#### `GetOrigin(player)` → `x, y, z`
+Get player's 3D position.
+
+```lua
+local x, y, z = GetOrigin(player)
+Print("Position: " .. x .. ", " .. y .. ", " .. z)
+```
+
+#### `GetViewAngles()` → `pitch, yaw, roll`
+Get current view angles.
+
+```lua
+local pitch, yaw, roll = GetViewAngles()
+```
+
+#### `SetViewAngles(pitch, yaw, roll)`
+Set view angles.
+
+```lua
+SetViewAngles(0, 90, 0)
+```
+
+---
+
+### 🔫 Weapon Functions
+
+#### `GetActiveWeapon(player)` → `weapon`
+Get player's active weapon.
+
+```lua
+local weapon = GetActiveWeapon(player)
+if weapon then
+    -- Has a weapon
+end
+```
+
+#### `GetWeaponName(weapon)` → `string`
+Get weapon name.
+
+```lua
+local name = GetWeaponName(weapon)
+Print("Current weapon: " .. name)
+```
+
+#### `GetAmmoInClip(weapon)` → `number`
+Get ammo in current clip.
+
+```lua
+local ammo = GetAmmoInClip(weapon)
+```
+
+---
+
+### 🎨 Drawing Functions
+
+#### `DrawLine(x1, y1, x2, y2, r, g, b, a)`
+Draw a line on screen.
+
+```lua
+DrawLine(100, 100, 200, 200, 255, 0, 0, 255)
+```
+
+#### `DrawRect(x, y, width, height, r, g, b, a)`
+Draw a rectangle outline.
+
+```lua
+DrawRect(10, 10, 100, 50, 0, 255, 0, 255)
+```
+
+#### `DrawFilledRect(x, y, width, height, r, g, b, a)`
+Draw a filled rectangle.
+
+```lua
+DrawFilledRect(10, 10, 100, 50, 0, 0, 255, 128)
+```
+
+#### `DrawText(x, y, r, g, b, a, text)`
+Draw text on screen.
+
+```lua
+DrawText(10, 10, 255, 255, 255, 255, "Hello!")
+```
+
+#### `DrawCircle(x, y, radius, r, g, b, a)`
+Draw a circle outline.
+
+```lua
+DrawCircle(960, 540, 100, 255, 255, 0, 255)
+```
+
+---
+
+### 🎯 Resolver / Ragebot Functions
+
+#### `GetEyePosition(player)` → `x, y, z`
+Get player's eye position (for aiming).
+
+```lua
+local ex, ey, ez = GetEyePosition(player)
+```
+
+#### `GetVelocity(player)` → `x, y, z`
+Get player's velocity vector.
+
+```lua
+local vx, vy, vz = GetVelocity(player)
+local speed = math.sqrt(vx*vx + vy*vy)
+Print("Speed: " .. speed)
+```
+
+#### `GetSimulationTime(player)` → `number`
+Get player's simulation time (for lag compensation).
+
+```lua
+local simTime = GetSimulationTime(player)
+```
+
+#### `GetFlags(player)` → `number`
+Get player's flags (bit mask).
+
+```lua
+local flags = GetFlags(player)
+```
+
+#### `IsOnGround(player)` → `boolean`
+Check if player is on the ground.
+
+```lua
+if IsOnGround(player) then
+    -- Player is grounded
+end
+```
+
+#### `GetMissedShots(player)` → `count`
+Get number of missed shots on this player.
+
+```lua
+local misses = GetMissedShots(player)
+if misses > 2 then
+    -- Switch resolver mode
+end
+```
+
+#### `OverrideResolver(player, yaw)`
+Override resolver angle for a player.
+
+```lua
+-- Force resolver to aim at 90 degrees
+OverrideResolver(player, 90)
+```
+
+#### `ResetResolver(player)`
+Reset resolver state for a player.
+
+```lua
+ResetResolver(player)
+```
+
+---
+
+### 🌍 World Functions
+
+#### `WorldToScreen(x, y, z)` → `screenX, screenY, onScreen`
+Convert 3D world coordinates to 2D screen coordinates.
+
+```lua
+local screenX, screenY, onScreen = WorldToScreen(100, 200, 300)
+if onScreen then
+    DrawCircle(screenX, screenY, 5, 255, 0, 0, 255)
+end
+```
+
+---
+
+### 📐 Math Functions
+
+#### `Distance(x1, y1, z1, x2, y2, z2)` → `number`
+Calculate 3D distance between two points.
+
+```lua
+local dist = Distance(0, 0, 0, 100, 100, 100)
+```
+
+#### `AngleVectors(pitch, yaw)` → `x, y, z`
+Convert angles to direction vector.
+
+```lua
+local x, y, z = AngleVectors(0, 90)
+```
+
+---
+
+## 🔔 Callbacks
+
+Callbacks are functions that get called automatically at specific points in the game loop.
+
+### Available Callbacks
+
+#### `OnPaint()`
+Called every frame when drawing overlays.
+
+```lua
+function OnPaint()
+    DrawText(10, 10, 255, 255, 255, 255, "FPS: 60")
+end
+RegisterCallback("OnPaint", OnPaint)
+```
+
+#### `OnCreateMove(cmd)`
+Called before sending user commands to the server.
+
+```lua
+function OnCreateMove(cmd)
+    -- Modify movement, angles, etc.
+end
+RegisterCallback("OnCreateMove", OnCreateMove)
+```
+
+#### `OnFrameStageNotify()`
+Called at various frame stages.
+
+```lua
+function OnFrameStageNotify()
+    -- Run code at specific frame stages
+end
+RegisterCallback("OnFrameStageNotify", OnFrameStageNotify)
+```
+
+#### `OnPlayerHurt()`
+Called when a player takes damage.
+
+```lua
+function OnPlayerHurt()
+    PrintColor(255, 0, 0, "Someone was hurt!")
+end
+RegisterCallback("OnPlayerHurt", OnPlayerHurt)
+```
+
+#### `OnRoundStart()`
+Called at the start of each round.
+
+```lua
+function OnRoundStart()
+    Print("Round started!")
+end
+RegisterCallback("OnRoundStart", OnRoundStart)
+```
+
+#### `OnRoundEnd()`
+Called at the end of each round.
+
+```lua
+function OnRoundEnd()
+    Print("Round ended!")
+end
+RegisterCallback("OnRoundEnd", OnRoundEnd)
+```
+
+---
+
+## 💡 Examples
+
+### Example 1: Simple Watermark
+
+```lua
+function OnPaint()
+    local x, y = 10, 10
+    DrawFilledRect(x, y, 200, 30, 0, 0, 0, 200)
+    DrawRect(x, y, 200, 30, 255, 255, 255, 255)
+    DrawText(x + 10, y + 8, 255, 255, 255, 255, "My Custom Cheat")
+end
+
+RegisterCallback("OnPaint", OnPaint)
+Print("Watermark script loaded!")
+```
+
+### Example 2: Health Bar
+
+```lua
+function OnPaint()
+    local player = GetLocalPlayer()
+    if not player or not IsAlive(player) then
+        return
+    end
+    
+    local health = GetHealth(player)
+    local maxHealth = 100
+    local barWidth = 200
+    local barHeight = 20
+    local x, y = 10, 50
+    
+    -- Background
+    DrawFilledRect(x, y, barWidth, barHeight, 0, 0, 0, 200)
+    
+    -- Health bar
+    local healthWidth = (health / maxHealth) * barWidth
+    local r = 255 - (health * 2.55)
+    local g = health * 2.55
+    DrawFilledRect(x, y, healthWidth, barHeight, r, g, 0, 255)
+    
+    -- Border
+    DrawRect(x, y, barWidth, barHeight, 255, 255, 255, 255)
+    
+    -- Text
+    DrawText(x + 5, y + 3, 255, 255, 255, 255, "HP: " .. health)
+end
+
+RegisterCallback("OnPaint", OnPaint)
+```
+
+### Example 3: Crosshair
+
+```lua
+function OnPaint()
+    local centerX = 960
+    local centerY = 540
+    local size = 10
+    local gap = 5
+    
+    -- Top
+    DrawLine(centerX, centerY - gap - size, centerX, centerY - gap, 0, 255, 0, 255)
+    -- Bottom
+    DrawLine(centerX, centerY + gap, centerX, centerY + gap + size, 0, 255, 0, 255)
+    -- Left
+    DrawLine(centerX - gap - size, centerY, centerX - gap, centerY, 0, 255, 0, 255)
+    -- Right
+    DrawLine(centerX + gap, centerY, centerX + gap + size, centerY, 0, 255, 0, 255)
+    
+    -- Center dot
+    DrawCircle(centerX, centerY, 2, 255, 0, 0, 255)
+end
+
+RegisterCallback("OnPaint", OnPaint)
+```
+
+### Example 4: Position Logger
+
+```lua
+local lastLogTime = 0
+
+function OnFrameStageNotify()
+    local player = GetLocalPlayer()
+    if not player then return end
+    
+    local currentTime = os.time()
+    if currentTime - lastLogTime >= 5 then
+        local x, y, z = GetOrigin(player)
+        Print("Position: X=" .. string.format("%.2f", x) .. 
+              " Y=" .. string.format("%.2f", y) .. 
+              " Z=" .. string.format("%.2f", z))
+        lastLogTime = currentTime
+    end
+end
+
+RegisterCallback("OnFrameStageNotify", OnFrameStageNotify)
+Print("Position logger active (logs every 5 seconds)")
+```
+
+### Example 5: Custom Resolver
+
+```lua
+-- Store resolver data per player
+local resolverData = {}
+
+function ResolvePlayer(player)
+    if not player or not IsAlive(player) then return end
+    
+    -- Get player velocity
+    local vx, vy, vz = GetVelocity(player)
+    local speed = math.sqrt(vx*vx + vy*vy)
+    
+    -- Initialize data if needed
+    if not resolverData[player] then
+        resolverData[player] = { missedShots = 0, mode = 0 }
+    end
+    
+    local data = resolverData[player]
+    local resolverYaw = 0
+    
+    -- Standing resolver
+    if speed < 5 then
+        if data.missedShots == 0 then
+            resolverYaw = 0  -- Center
+        elseif data.missedShots == 1 then
+            resolverYaw = 60  -- Right
+        else
+            resolverYaw = -60  -- Left
+        end
+    else
+        -- Moving - follow velocity
+        resolverYaw = math.deg(math.atan2(vy, vx))
+    end
+    
+    OverrideResolver(player, resolverYaw)
+end
+
+function OnCreateMove(cmd)
+    -- Call ResolvePlayer for each enemy
+    -- Example: ResolvePlayer(enemy)
+end
+
+function OnRoundStart()
+    resolverData = {}  -- Reset on new round
+    PrintColor(0, 255, 255, "Resolver reset")
+end
+
+RegisterCallback("OnCreateMove", OnCreateMove)
+RegisterCallback("OnRoundStart", OnRoundStart)
+```
+
+---
+
+## ✅ Best Practices
+
+### Performance
+- ❌ **Don't** create new objects in OnPaint every frame
+- ✅ **Do** reuse variables and cache calculations
+- ❌ **Don't** do heavy calculations in callbacks
+- ✅ **Do** use local variables when possible
+
+### Safety
+- ✅ **Always** check if player/weapon objects are valid before using
+- ✅ **Always** use nil checks
+- ✅ **Always** validate callback parameters
+- ❌ **Don't** assume objects exist
+
+### Code Organization
+```lua
+-- Good practice
+local myCache = {}
+
+function Initialize()
+    -- Setup code
+end
+
+function OnPaint()
+    -- Drawing code
+end
+
+Initialize()
+RegisterCallback("OnPaint", OnPaint)
+```
+
+### Debugging
+```lua
+-- Use Print() to debug
+function OnPaint()
+    local player = GetLocalPlayer()
+    if not player then
+        Print("ERROR: No local player!")
+        return
+    end
+    
+    Print("Player found, drawing...")
+    -- Your code
+end
+```
+
+---
+
+## 🎯 Common Use Cases
+
+### Custom ESP
+Use `WorldToScreen()` + drawing functions to create custom ESP overlays
+
+### Movement Modifications  
+Use `OnCreateMove()` callback to modify player movement and input
+
+### Custom Resolver
+Use `GetVelocity()`, `GetSimulationTime()`, `OverrideResolver()` for anti-aim breaking
+
+### Shot Tracking
+Use `OnPlayerHurt()` callback to track hits/misses and adjust resolver
+
+### Event Tracking
+Use `OnRoundStart()`, `OnRoundEnd()`, `OnPlayerHurt()`
+
+### HUD Modifications
+Use `OnPaint()` for custom overlays
+
+### Config Automation
+Use `SetBool/Int/Float()` to modify settings
+
+---
+
+## 🔧 Troubleshooting
+
+### Script not loading?
+1. Check the file is in `lua_scripts` folder
+2. Check the file extension is `.lua`
+3. Click **Refresh Scripts** in the menu
+4. Check console for error messages
+
+### Script not running?
+1. Make sure the checkbox is enabled
+2. Check you registered callbacks correctly
+3. Use `Print()` to verify script loads
+4. Check for Lua syntax errors
+
+### Drawing not showing?
+1. Verify `OnPaint()` callback is registered
+2. Check coordinates are on screen
+3. Verify alpha value is not 0
+4. Make sure script is enabled
+
+---
+
+## 📚 Additional Resources
+
+### Lua Documentation
+- [Lua 5.4 Reference Manual](https://www.lua.org/manual/5.4/)
+- [Learn Lua in 15 Minutes](https://tylerneylon.com/a/learn-lua/)
+
+### Script Examples
+Check the `lua_scripts` folder for:
+- `example_esp.lua` - Drawing demonstration
+- `example_bhop.lua` - Movement helper
+- `example_config.lua` - Config manipulation
+
+---
+
+## 🎉 Happy Scripting!
+
+Create your own scripts and enhance your gameplay experience. Share your creations with the community!
+
+**Need help?** Check the examples or ask in the community forum.
+
+---
+
+*Last updated: November 29, 2025*
